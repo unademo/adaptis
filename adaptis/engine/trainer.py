@@ -1,7 +1,7 @@
 import os
 from copy import deepcopy
 from collections import defaultdict
-
+from adaptis.utils.log import logger
 import cv2
 from tqdm import tqdm
 import numpy as np
@@ -11,6 +11,28 @@ from torchvision.transforms import Normalize
 
 from adaptis.utils import log, vis, misc
 
+class AverageMeter(object):
+    """Computes and stores the average and current value"""
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.val = 0
+        self.avg = 0
+        self.sum = 0
+        self.count = 0
+
+    def update(self, val, n=1):
+        self.val = val
+        self.sum += val * n
+        self.count += n
+        self.avg = 1.0 * self.sum / self.count
+
+    def get_avg(self):
+        return self.avg
+
+    def get_count(self):
+        return self.count
 
 class AdaptISTrainer(object):
     def __init__(self, args, model, model_cfg, loss_cfg,
@@ -48,9 +70,11 @@ class AdaptISTrainer(object):
         self.val_loader = DataLoader(valset, batch_size=args.val_batch_size, pin_memory=True,
                                      shuffle=False, num_workers=args.workers, drop_last=True)
 
-        self.device = args.device
+        self.device = torch.device(args.device)
         log.logger.info(model)
-        self.net = model.to(self.device)
+        if not args.no_cuda:
+            self.net = model.to(self.device)
+            
         self.evaluator = None
         self._load_weights()
 
@@ -75,6 +99,14 @@ class AdaptISTrainer(object):
         else:
             self.denormalizator = lambda x: x
 
+        if len(args.gpus.split(","))>1:
+            logger.info("could use {} gpus.".format(torch.cuda.device_count()))
+            assert args.batch_size % torch.cuda.device_count() == 0, "batch size should be divided by device count"
+            self.net = torch.nn.DataParallel(self.net)
+
+        self.epoch_loss = AverageMeter()
+        self.best_loss = 2.0
+
     def _load_weights(self):
         if self.args.weights is not None:
             if os.path.isfile(self.args.weights):
@@ -98,7 +130,7 @@ class AdaptISTrainer(object):
         for i, batch_data in enumerate(tbar):
             global_step = epoch * len(self.train_loader) + i
 
-            loss, losses_logging, batch_data, outputs = self.batch_forward(batch_data)
+            loss, losses_logging, batch_data, outputs = self.batch_forward_parallelloss(batch_data)
 
             self.optim.zero_grad()
             loss.backward()
@@ -108,7 +140,8 @@ class AdaptISTrainer(object):
 
             loss = loss.detach().cpu().numpy().mean()
             train_loss += loss
-
+            
+            
             for loss_name, loss_values in losses_logging.items():
                 self.summary_writer.add_scalar(
                     tag=f'{log_prefix}Losses/{loss_name}',
@@ -145,6 +178,7 @@ class AdaptISTrainer(object):
                     f'{log_prefix}Metrics/{metric.name}',
                     global_step
                 )
+            self.epoch_loss.update(loss.item(), batch_data['instances'].size(0))
 
         for metric in self.train_metrics:
             self.summary_writer.add_scalar(
@@ -155,7 +189,15 @@ class AdaptISTrainer(object):
         misc.save_checkpoint(self.net, self.args.checkpoints_path, prefix=self.task_prefix, epoch=None)
         if epoch % self.checkpoint_interval == 0:
             misc.save_checkpoint(self.net, self.args.checkpoints_path, prefix=self.task_prefix, epoch=epoch)
-
+            
+            
+        model_state_dic = self.net.module.state_dict() # DataParallel
+        if self.epoch_loss.get_avg() < self.best_loss:
+            self.best_loss = self.epoch_loss.get_avg()
+            logger.info("save best loss model epoch {}".format(epoch))
+            torch.save(model_state_dic,
+                       os.path.join(self.args.checkpoints_path, 'ep-{}-loss-{}_model.pth'.format(epoch,self.best_loss)))
+        
     def validation(self, epoch):
         if self.summary_writer is None:
             self.summary_writer = log.SummaryWriterAvg(log_dir=str(self.args.logs_path),
@@ -174,7 +216,7 @@ class AdaptISTrainer(object):
         self.net.train(False)
         for i, batch_data in enumerate(tbar):
             global_step = epoch * len(self.val_loader) + i
-            loss, batch_losses_logging, batch_data, outputs = self.batch_forward(batch_data, validation=True)
+            loss, batch_losses_logging, batch_data, outputs = self.batch_forward_parallelloss(batch_data, validation=True)
 
             for loss_name, loss_values in batch_losses_logging.items():
                 losses_logging[loss_name].extend(loss_values)
@@ -233,12 +275,12 @@ class AdaptISTrainer(object):
         image = image.transpose((1, 2, 0))
 
         gt_instance_masks = instance_masks.cpu().numpy()
-        predicted_instance_masks = torch.sigmoid(outputs.instances.detach()).cpu().numpy()
+        predicted_instance_masks = torch.sigmoid(outputs["instances"].detach()).cpu().numpy()
 
         if 'semantic' in batch_data:
             segmentation_labels = batch_data['semantic']
             gt_segmentation = segmentation_labels[0].cpu().numpy() + 1
-            predicted_label = torch.argmax(outputs.semantic[0].detach(), dim=0).cpu().numpy() + 1
+            predicted_label = torch.argmax(outputs["semantic"][0].detach(), dim=0).cpu().numpy() + 1
 
             if len(gt_segmentation.shape) == 3:
                 area_weights = gt_segmentation[1] ** self.loss_cfg.segmentation_loss._area_gamma
@@ -273,7 +315,8 @@ class AdaptISTrainer(object):
 
     def batch_forward(self, batch_data, validation=False):
         if 'instances' in batch_data:
-            batch_size, num_points, c, h, w = batch_data['instances'].size()
+            # batch_data['instances']=batch_data['instances'].squeeze()
+            batch_size, num_points, h, w, c, = batch_data['instances'].size()
             batch_data['instances'] = batch_data['instances'].view(batch_size * num_points, c, h, w)
 
         metrics = self.val_metrics if validation else self.train_metrics
@@ -283,20 +326,63 @@ class AdaptISTrainer(object):
             image, points = batch_data['images'], batch_data['points']
             output = self.net(image.to(self.device), points.to(self.device))
 
+            # adaptis outputs
+            # loss = 0.0
+            # loss = self._add_loss('instance_loss', loss, losses_logging, validation,
+            #                       lambda: (output.instances, batch_data['instances'].to(self.device)))
+            # loss = self._add_loss('segmentation_loss', loss, losses_logging, validation,
+            #                       lambda: (output.semantic, batch_data['semantic'].to(self.device)))
+            # loss = self._add_loss('proposals_loss', loss, losses_logging, validation,
+            #                       lambda: (output.instances, output.proposals, batch_data['instances'].to(self.device)))
+            #
+            # with torch.no_grad():
+            #     for m in metrics:
+            #         m.update(*(getattr(output, x) for x in m.pred_outputs),
+            #                  *(batch_data[x].to(self.device) for x in m.gt_outputs))
+
+            # dict
             loss = 0.0
             loss = self._add_loss('instance_loss', loss, losses_logging, validation,
-                                  lambda: (output.instances, batch_data['instances'].to(self.device)))
+                                  lambda: (output["instances"], batch_data['instances'].to(self.device)))
             loss = self._add_loss('segmentation_loss', loss, losses_logging, validation,
-                                  lambda: (output.semantic, batch_data['semantic'].to(self.device)))
+                                  lambda: (output["semantic"], batch_data['semantic'].to(self.device)))
             loss = self._add_loss('proposals_loss', loss, losses_logging, validation,
-                                  lambda: (output.instances, output.proposals, batch_data['instances'].to(self.device)))
+                                  lambda: (output["instances"], output["proposals"], batch_data['instances'].to(self.device)))
 
             with torch.no_grad():
                 for m in metrics:
-                    m.update(*(getattr(output, x) for x in m.pred_outputs),
+                    m.update(*(output[x]for x in m.pred_outputs),
                              *(batch_data[x].to(self.device) for x in m.gt_outputs))
 
         return loss, losses_logging, batch_data, output
+
+
+    def batch_forward_parallelloss(self, batch_data, validation=False):
+        if 'instances' in batch_data:
+            # batch_data['instances']=batch_data['instances'].squeeze()
+            batch_size, num_points, h, w, c, = batch_data['instances'].size()
+            batch_data['instances'] = batch_data['instances'].view(batch_size * num_points, c, h, w)
+
+        metrics = self.val_metrics if validation else self.train_metrics
+
+        
+        with torch.set_grad_enabled(not validation):
+            image, points = batch_data['images'], batch_data['points']
+            instance, semantic = batch_data['instances'],batch_data['semantic']
+            
+            loss,output = self.net(image.to(self.device), points.to(self.device),
+                               validation, instance.to(self.device), semantic.to(self.device)) #
+            
+            #losses_logging,
+            losses_logging = defaultdict(list) #TODO: Need to implement
+            
+            with torch.no_grad():
+                for m in metrics:
+                    m.update(*(output[x]for x in m.pred_outputs),
+                             *(batch_data[x].to(self.device) for x in m.gt_outputs))
+
+        return loss.mean(), losses_logging, batch_data, output
+
 
     def _add_loss(self, loss_name, total_loss, losses_logging, validation, lambda_loss_inputs):
         loss_cfg = self.loss_cfg if not validation else self.val_loss_cfg

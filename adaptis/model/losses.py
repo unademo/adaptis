@@ -74,7 +74,10 @@ class NormalizedFocalLossSigmoid(nn.Module):
 
     def forward(self, pred, label, sample_weight=None):
         one_hot = label > 0
+        # one_hot = one_hot.cpu()
+        # one_hot = torch.Tensor(one_hot.cpu().numpy().astype(uint8)).cuda()
         t = torch.ones_like(one_hot)
+        
 
         if not self._from_logits:
             pred = torch.sigmoid(pred)

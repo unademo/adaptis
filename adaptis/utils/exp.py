@@ -11,8 +11,8 @@ from adaptis.utils.args import get_train_arguments
 
 
 def init_experiment(experiment_name, add_exp_args, script_path=None):
-    parser = get_train_arguments()
-    parser = add_exp_args(parser)
+    # parser = get_train_arguments() #TODO: Modified
+    parser = add_exp_args()
     args = parser.parse_args()
 
     experiments_path = Path('./experiments') / experiment_name
@@ -54,14 +54,14 @@ def init_experiment(experiment_name, add_exp_args, script_path=None):
     else:
         if args.gpus:
             os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-            os.environ["CUDA_VISIBLE_DEVICES"] = f"{args.gpus.split(',')[0]}"
-        args.device = torch.device(f'cuda:{0}')
-        args.ngpus = 1
+            # os.environ["CUDA_VISIBLE_DEVICES"] = f"{args.gpus.split(',')[0]}"
+        args.device = torch.device(f'cuda') #:{0}
+
+        args.ngpus = 3
         logger.info(f'Number of GPUs: {args.ngpus}')
 
         if args.ngpus < 2:
             args.syncbn = False
-
     logger.info(args)
 
     return args

@@ -1,0 +1,390 @@
+(INFO) 2020-01-02 17:35:04: Number of GPUs: 3
+(INFO) 2020-01-02 17:35:04: Namespace(batch_size=3, checkpoints_path=PosixPath('experiments/clothes3/158_clothes3/checkpoints'), dataset='ClothesSegDataset', dataset_path='/media/kk/databases/ClothesSegDataset', device=device(type='cuda'), exp_name='clothes3', gpus='1,2,3', logs_path=PosixPath('experiments/clothes3/158_clothes3/logs'), ngpus=3, no_cuda=False, no_exp=False, prop_num_epochs=10, prop_num_points=32, run_path=PosixPath('experiments/clothes3/158_clothes3'), seg_num_epochs=160, seg_num_points=12, start_epoch=0, val_batch_size=1, weights=None, workers=4)
+(INFO) 2020-01-02 17:35:04: AdaptIS(
+  (backbone): UNet(
+    (image_bn): BatchNorm2d(3, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (encoder): ModuleList(
+      (0): Sequential(
+        (0): Identity()
+        (1): DownBlock(
+          (down_block): Sequential(
+            (0): ConvBlock(
+              (conv_block): Sequential(
+                (0): Conv2d(3, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                (1): ReLU()
+                (2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+            )
+            (1): ConvBlock(
+              (conv_block): Sequential(
+                (0): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                (1): ReLU()
+                (2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+            )
+          )
+        )
+      )
+      (1): Sequential(
+        (0): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=True)
+        (1): DownBlock(
+          (down_block): Sequential(
+            (0): ConvBlock(
+              (conv_block): Sequential(
+                (0): Conv2d(32, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                (1): ReLU()
+                (2): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+            )
+            (1): ConvBlock(
+              (conv_block): Sequential(
+                (0): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                (1): ReLU()
+                (2): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+            )
+          )
+        )
+      )
+      (2): Sequential(
+        (0): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=True)
+        (1): DownBlock(
+          (down_block): Sequential(
+            (0): ConvBlock(
+              (conv_block): Sequential(
+                (0): Conv2d(64, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                (1): ReLU()
+                (2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+            )
+            (1): ConvBlock(
+              (conv_block): Sequential(
+                (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                (1): ReLU()
+                (2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+            )
+          )
+        )
+      )
+      (3): Sequential(
+        (0): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=True)
+        (1): DownBlock(
+          (down_block): Sequential(
+            (0): ConvBlock(
+              (conv_block): Sequential(
+                (0): Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                (1): ReLU()
+                (2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+            )
+            (1): ConvBlock(
+              (conv_block): Sequential(
+                (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                (1): ReLU()
+                (2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+            )
+          )
+        )
+      )
+      (4): Sequential(
+        (0): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=True)
+        (1): DownBlock(
+          (down_block): Sequential(
+            (0): ConvBlock(
+              (conv_block): Sequential(
+                (0): Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                (1): ReLU()
+                (2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+            )
+            (1): ConvBlock(
+              (conv_block): Sequential(
+                (0): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                (1): ReLU()
+                (2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              )
+            )
+          )
+        )
+      )
+    )
+    (decoder): ModuleList(
+      (0): UpBlock(
+        (upsampler): Sequential(
+          (0): BilinearConvTranspose2d(512, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), groups=256, bias=False)
+          (1): ReLU()
+        )
+        (conv3_0): ConvBlock(
+          (conv_block): Sequential(
+            (0): Conv2d(512, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (1): ReLU()
+            (2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+        (conv3_1): ConvBlock(
+          (conv_block): Sequential(
+            (0): Conv2d(256, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (1): ReLU()
+            (2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+      (1): UpBlock(
+        (upsampler): Sequential(
+          (0): BilinearConvTranspose2d(128, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), groups=128, bias=False)
+          (1): ReLU()
+        )
+        (conv3_0): ConvBlock(
+          (conv_block): Sequential(
+            (0): Conv2d(256, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (1): ReLU()
+            (2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+        (conv3_1): ConvBlock(
+          (conv_block): Sequential(
+            (0): Conv2d(128, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (1): ReLU()
+            (2): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+      (2): UpBlock(
+        (upsampler): Sequential(
+          (0): BilinearConvTranspose2d(64, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), groups=64, bias=False)
+          (1): ReLU()
+        )
+        (conv3_0): ConvBlock(
+          (conv_block): Sequential(
+            (0): Conv2d(128, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (1): ReLU()
+            (2): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+        (conv3_1): ConvBlock(
+          (conv_block): Sequential(
+            (0): Conv2d(64, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (1): ReLU()
+            (2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+      (3): UpBlock(
+        (upsampler): Sequential(
+          (0): BilinearConvTranspose2d(32, 32, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), groups=32, bias=False)
+          (1): ReLU()
+        )
+        (conv3_0): ConvBlock(
+          (conv_block): Sequential(
+            (0): Conv2d(64, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (1): ReLU()
+            (2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+        (conv3_1): ConvBlock(
+          (conv_block): Sequential(
+            (0): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (1): ReLU()
+            (2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+    )
+    (final_block): DownBlock(
+      (down_block): Sequential(
+        (0): ConvBlock(
+          (conv_block): Sequential(
+            (0): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (1): ReLU()
+            (2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+        (1): ConvBlock(
+          (conv_block): Sequential(
+            (0): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (1): ReLU()
+            (2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+        )
+      )
+    )
+  )
+  (adaptis_head): ToyAdaptISHead(
+    (EQF): ExtractQueryFeatures(
+      (extractor): RoIAlign(output_size=(1, 1), spatial_scale=1.0, sampling_ratio=-1)
+    )
+    (controller): SimpleConvController(
+      (controller): Sequential(
+        (0): Conv2d(32, 32, kernel_size=(1, 1), stride=(1, 1))
+        (1): ReLU()
+        (2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (3): Conv2d(32, 32, kernel_size=(1, 1), stride=(1, 1))
+        (4): ReLU()
+        (5): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (6): Conv2d(32, 32, kernel_size=(1, 1), stride=(1, 1))
+        (7): ReLU()
+        (8): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+    )
+    (add_coord_features): AppendCoordFeatures()
+    (block0): Sequential(
+      (0): Conv2d(35, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): ReLU()
+      (2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (3): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (4): ReLU()
+      (5): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (6): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (7): ReLU()
+      (8): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (adain): AdaIN(
+      (affine_scale): Linear(in_features=32, out_features=32, bias=True)
+      (affine_bias): Linear(in_features=32, out_features=32, bias=True)
+      (in_2d): InstanceNorm2d(32, eps=1e-05, momentum=0.0, affine=False, track_running_stats=False)
+    )
+    (block1): Sequential(
+      (0): Conv2d(32, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): ReLU()
+      (2): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (3): Conv2d(16, 1, kernel_size=(1, 1), stride=(1, 1))
+    )
+  )
+  (segmentation_head): ConvHead(
+    (convhead): Sequential(
+      (0): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): ReLU()
+      (2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (3): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (4): ReLU()
+      (5): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (6): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (7): ReLU()
+      (8): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (9): Conv2d(32, 2, kernel_size=(1, 1), stride=(1, 1))
+    )
+  )
+)
+(INFO) 2020-01-02 17:35:10: could use 3 gpus.
+(INFO) 2020-01-02 17:35:10: Starting Epoch: 0
+(INFO) 2020-01-02 17:35:10: Total Epochs: 160
+(INFO) 2020-01-02 17:35:10: 0%|                                                                       | 0/399 [00:00<?, ?it/s]
+(INFO) 2020-01-02 17:35:25: Epoch 0, training loss 1.806200:   0%|                                      | 0/399 [00:15<?, ?it/s]
+(INFO) 2020-01-02 17:35:30: Epoch 0, training loss 0.176850:   2%|6                             | 8/399 [00:20<11:37,  1.78s/it]
+(INFO) 2020-01-02 17:35:36: Epoch 0, training loss 0.067867:   5%|#3                           | 18/399 [00:26<03:47,  1.67it/s]
+(INFO) 2020-01-02 17:35:41: Epoch 0, training loss 0.041412:   7%|##                           | 28/399 [00:31<03:24,  1.81it/s]
+(INFO) 2020-01-02 17:35:47: Epoch 0, training loss 0.027295:  10%|##7                          | 38/399 [00:36<03:13,  1.86it/s]
+(INFO) 2020-01-02 17:35:52: Epoch 0, training loss 0.022320:  12%|###4                         | 48/399 [00:42<03:12,  1.82it/s]
+(INFO) 2020-01-02 17:35:57: Epoch 0, training loss 0.016713:  15%|####2                        | 58/399 [00:47<02:57,  1.93it/s]
+(INFO) 2020-01-02 17:36:03: Epoch 0, training loss 0.013438:  17%|####9                        | 68/399 [00:53<03:02,  1.81it/s]
+(INFO) 2020-01-02 17:36:08: Epoch 0, training loss 0.013602:  20%|#####6                       | 78/399 [00:58<02:56,  1.82it/s]
+(INFO) 2020-01-02 17:36:14: Epoch 0, training loss 0.009976:  22%|######3                      | 88/399 [01:03<02:49,  1.84it/s]
+(INFO) 2020-01-02 17:36:19: Epoch 0, training loss 0.007952:  24%|#######                      | 97/399 [01:09<02:52,  1.75it/s]
+(INFO) 2020-01-02 17:36:24: Epoch 0, training loss 0.008491:  27%|#######4                    | 106/399 [01:14<02:47,  1.75it/s]
+(INFO) 2020-01-02 17:36:30: Epoch 0, training loss 0.008921:  29%|########1                   | 116/399 [01:19<02:40,  1.76it/s]
+(INFO) 2020-01-02 17:36:35: Epoch 0, training loss 0.008153:  32%|########8                   | 126/399 [01:25<02:25,  1.88it/s]
+(INFO) 2020-01-02 17:36:40: Epoch 0, training loss 0.005690:  34%|#########5                  | 136/399 [01:30<02:23,  1.83it/s]
+(INFO) 2020-01-02 17:36:46: Epoch 0, training loss 0.005221:  37%|##########2                 | 146/399 [01:36<02:16,  1.86it/s]
+(INFO) 2020-01-02 17:36:51: Epoch 0, training loss 0.006067:  39%|##########8                 | 155/399 [01:41<02:17,  1.78it/s]
+(INFO) 2020-01-02 17:36:57: Epoch 0, training loss 0.006037:  41%|###########5                | 165/399 [01:46<02:04,  1.88it/s]
+(INFO) 2020-01-02 17:37:02: Epoch 0, training loss 0.005346:  44%|############2               | 175/399 [01:52<02:00,  1.85it/s]
+(INFO) 2020-01-02 17:37:08: Epoch 0, training loss 0.004324:  46%|############9               | 185/399 [01:57<02:01,  1.76it/s]
+(INFO) 2020-01-02 17:37:13: Epoch 0, training loss 0.004250:  49%|#############6              | 194/399 [02:02<01:57,  1.75it/s]
+(INFO) 2020-01-02 17:37:18: Epoch 0, training loss 0.003937:  51%|##############2             | 203/399 [02:08<01:51,  1.76it/s]
+(INFO) 2020-01-02 17:37:23: Epoch 0, training loss 0.003830:  53%|##############8             | 212/399 [02:13<01:48,  1.72it/s]
+(INFO) 2020-01-02 17:37:29: Epoch 0, training loss 0.003878:  56%|###############5            | 222/399 [02:18<01:35,  1.86it/s]
+(INFO) 2020-01-02 17:37:34: Epoch 0, training loss 0.003914:  58%|################2           | 232/399 [02:24<01:30,  1.84it/s]
+(INFO) 2020-01-02 17:37:40: Epoch 0, training loss 0.003425:  61%|################9           | 242/399 [02:29<01:25,  1.83it/s]
+(INFO) 2020-01-02 17:37:45: Epoch 0, training loss 0.003965:  63%|#################6          | 251/399 [02:34<01:23,  1.78it/s]
+(INFO) 2020-01-02 17:37:50: Epoch 0, training loss 0.002714:  65%|##################2         | 260/399 [02:40<01:21,  1.71it/s]
+(INFO) 2020-01-02 17:37:55: Epoch 0, training loss 0.002639:  68%|##################9         | 270/399 [02:45<01:10,  1.83it/s]
+(INFO) 2020-01-02 17:38:01: Epoch 0, training loss 0.002822:  70%|###################6        | 280/399 [02:51<01:03,  1.87it/s]
+(INFO) 2020-01-02 17:38:06: Epoch 0, training loss 0.002914:  73%|####################3       | 290/399 [02:56<00:59,  1.82it/s]
+(INFO) 2020-01-02 17:38:12: Epoch 0, training loss 0.002604:  75%|####################9       | 299/399 [03:01<00:57,  1.75it/s]
+(INFO) 2020-01-02 17:38:17: Epoch 0, training loss 0.003092:  77%|#####################6      | 308/399 [03:06<00:51,  1.75it/s]
+(INFO) 2020-01-02 17:38:22: Epoch 0, training loss 0.002377:  79%|######################2     | 317/399 [03:11<00:44,  1.83it/s]
+(INFO) 2020-01-02 17:38:27: Epoch 0, training loss 0.002297:  82%|######################9     | 327/399 [03:17<00:39,  1.84it/s]
+(INFO) 2020-01-02 17:38:33: Epoch 0, training loss 0.002224:  84%|#######################6    | 337/399 [03:22<00:33,  1.83it/s]
+(INFO) 2020-01-02 17:38:38: Epoch 0, training loss 0.002312:  87%|########################3   | 347/399 [03:28<00:27,  1.87it/s]
+(INFO) 2020-01-02 17:38:43: Epoch 0, training loss 0.002291:  89%|########################9   | 356/399 [03:33<00:24,  1.75it/s]
+(INFO) 2020-01-02 17:38:49: Epoch 0, training loss 0.002046:  92%|#########################6  | 366/399 [03:38<00:17,  1.85it/s]
+(INFO) 2020-01-02 17:38:54: Epoch 0, training loss 0.001806:  94%|##########################3 | 376/399 [03:44<00:12,  1.85it/s]
+(INFO) 2020-01-02 17:39:00: Epoch 0, training loss 0.002100:  97%|########################### | 386/399 [03:49<00:06,  1.88it/s]
+(INFO) 2020-01-02 17:39:05: Epoch 0, training loss 0.001843:  99%|###########################7| 396/399 [03:55<00:01,  1.85it/s]
+(INFO) 2020-01-02 17:39:06: Save checkpoint to experiments/clothes3/158_clothes3/checkpoints/last_checkpoint.params
+(INFO) 2020-01-02 17:39:06: Save checkpoint to experiments/clothes3/158_clothes3/checkpoints/000.params
+(INFO) 2020-01-02 17:39:06: save best loss model epoch 0
+(INFO) 2020-01-02 17:39:10: Epoch 0, validation loss: 0.934054:   2%|5                          | 8/399 [00:03<02:39,  2.46it/s]
+(INFO) 2020-01-02 17:39:15: Epoch 0, validation loss: 0.902097:   6%|#4                        | 22/399 [00:08<02:22,  2.65it/s]
+(INFO) 2020-01-02 17:39:21: Epoch 0, validation loss: 0.955272:   9%|##4                       | 37/399 [00:14<02:05,  2.89it/s]
+(INFO) 2020-01-02 17:39:26: Epoch 0, validation loss: 0.956810:  13%|###3                      | 52/399 [00:19<02:00,  2.88it/s]
+(INFO) 2020-01-02 17:39:31: Epoch 0, validation loss: 0.952064:  17%|####3                     | 67/399 [00:24<01:53,  2.92it/s]
+(INFO) 2020-01-02 17:39:36: Epoch 0, validation loss: 0.958992:  21%|#####3                    | 82/399 [00:29<01:47,  2.95it/s]
+(INFO) 2020-01-02 17:39:41: Epoch 0, validation loss: 0.963915:  24%|######3                   | 97/399 [00:34<01:49,  2.76it/s]
+(INFO) 2020-01-02 17:39:47: Epoch 0, validation loss: 0.969841:  28%|######9                  | 111/399 [00:40<01:48,  2.65it/s]
+(INFO) 2020-01-02 17:39:52: Epoch 0, validation loss: 0.977799:  31%|#######8                 | 125/399 [00:45<01:38,  2.79it/s]
+(INFO) 2020-01-02 17:39:57: Epoch 0, validation loss: 0.989013:  35%|########7                | 140/399 [00:50<01:26,  2.98it/s]
+(INFO) 2020-01-02 17:40:02: Epoch 0, validation loss: 0.995141:  39%|#########7               | 155/399 [00:55<01:26,  2.81it/s]
+(INFO) 2020-01-02 17:40:07: Epoch 0, validation loss: 0.994170:  43%|##########6              | 170/399 [01:00<01:17,  2.94it/s]
+(INFO) 2020-01-02 17:40:12: Epoch 0, validation loss: 0.997743:  46%|###########5             | 185/399 [01:05<01:14,  2.88it/s]
+(INFO) 2020-01-02 17:40:17: Epoch 0, validation loss: 0.997303:  50%|############5            | 200/399 [01:10<01:08,  2.89it/s]
+(INFO) 2020-01-02 17:40:22: Epoch 0, validation loss: 0.993134:  54%|#############4           | 215/399 [01:16<01:03,  2.89it/s]
+(INFO) 2020-01-02 17:40:28: Epoch 0, validation loss: 1.000160:  57%|##############3          | 229/399 [01:21<01:00,  2.80it/s]
+(INFO) 2020-01-02 17:40:33: Epoch 0, validation loss: 0.999174:  61%|###############2         | 244/399 [01:26<00:48,  3.17it/s]
+(INFO) 2020-01-02 17:40:38: Epoch 0, validation loss: 0.999550:  65%|################2        | 259/399 [01:31<00:46,  3.03it/s]
+(INFO) 2020-01-02 17:40:43: Epoch 0, validation loss: 1.012656:  69%|#################1       | 274/399 [01:36<00:46,  2.71it/s]
+(INFO) 2020-01-02 17:40:48: Epoch 0, validation loss: 1.010665:  72%|##################1      | 289/399 [01:42<00:36,  3.00it/s]
+(INFO) 2020-01-02 17:40:54: Epoch 0, validation loss: 1.010171:  76%|###################      | 304/399 [01:47<00:32,  2.96it/s]
+(INFO) 2020-01-02 17:40:59: Epoch 0, validation loss: 1.007130:  80%|###################9     | 318/399 [01:52<00:31,  2.60it/s]
+(INFO) 2020-01-02 17:41:04: Epoch 0, validation loss: 1.013382:  83%|####################8    | 332/399 [01:57<00:22,  2.93it/s]
+(INFO) 2020-01-02 17:41:09: Epoch 0, validation loss: 1.010391:  87%|#####################7   | 347/399 [02:02<00:18,  2.78it/s]
+(INFO) 2020-01-02 17:41:14: Epoch 0, validation loss: 1.006687:  91%|######################6  | 362/399 [02:07<00:12,  2.96it/s]
+(INFO) 2020-01-02 17:41:19: Epoch 0, validation loss: 1.006007:  94%|#######################6 | 377/399 [02:12<00:07,  2.85it/s]
+(INFO) 2020-01-02 17:41:24: Epoch 0, validation loss: 1.006443:  98%|########################5| 392/399 [02:18<00:02,  3.00it/s]
+(INFO) 2020-01-02 17:41:29: Epoch 1, training loss 0.327287:   1%|2                             | 3/399 [00:02<05:51,  1.13it/s]
+(INFO) 2020-01-02 17:41:35: Epoch 1, training loss 0.053793:   3%|8                            | 12/399 [00:07<03:37,  1.78it/s]
+(INFO) 2020-01-02 17:41:40: Epoch 1, training loss 0.037227:   6%|#5                           | 22/399 [00:13<03:30,  1.79it/s]
+(INFO) 2020-01-02 17:41:45: Epoch 1, training loss 0.023205:   8%|##2                          | 31/399 [00:18<03:23,  1.81it/s]
+(INFO) 2020-01-02 17:41:50: Epoch 1, training loss 0.019696:  10%|##9                          | 41/399 [00:23<03:13,  1.85it/s]
+(INFO) 2020-01-02 17:41:56: Epoch 1, training loss 0.013001:  13%|###7                         | 51/399 [00:29<03:01,  1.92it/s]
+(INFO) 2020-01-02 17:42:01: Epoch 1, training loss 0.012003:  15%|####4                        | 61/399 [00:34<03:05,  1.82it/s]
+(INFO) 2020-01-02 17:42:06: Epoch 1, training loss 0.009545:  18%|#####1                       | 71/399 [00:39<02:55,  1.87it/s]
+(INFO) 2020-01-02 17:42:12: Epoch 1, training loss 0.010799:  20%|#####8                       | 80/399 [00:44<02:53,  1.83it/s]
+(INFO) 2020-01-02 17:42:17: Epoch 1, training loss 0.007105:  22%|######4                      | 89/399 [00:49<03:01,  1.71it/s]
+(INFO) 2020-01-02 17:42:22: Epoch 1, training loss 0.007481:  25%|#######1                     | 99/399 [00:55<02:48,  1.78it/s]
+(INFO) 2020-01-02 17:42:28: Epoch 1, training loss 0.007559:  27%|#######6                    | 109/399 [01:00<02:37,  1.84it/s]
+(INFO) 2020-01-02 17:42:33: Epoch 1, training loss 0.005734:  30%|########3                   | 119/399 [01:06<02:34,  1.82it/s]
+(INFO) 2020-01-02 17:42:38: Epoch 1, training loss 0.005531:  32%|########9                   | 128/399 [01:11<02:36,  1.73it/s]
+(INFO) 2020-01-02 17:42:44: Epoch 1, training loss 0.006090:  35%|#########6                  | 138/399 [01:17<02:30,  1.74it/s]
+(INFO) 2020-01-02 17:42:49: Epoch 1, training loss 0.004802:  37%|##########3                 | 148/399 [01:22<02:13,  1.88it/s]
+(INFO) 2020-01-02 17:42:55: Epoch 1, training loss 0.003890:  40%|###########                 | 158/399 [01:28<02:07,  1.88it/s]
+(INFO) 2020-01-02 17:43:00: Epoch 1, training loss 0.005938:  42%|###########7                | 167/399 [01:33<02:14,  1.73it/s]
+(INFO) 2020-01-02 17:43:05: Epoch 1, training loss 0.003514:  44%|############3               | 176/399 [01:38<02:02,  1.83it/s]
+(INFO) 2020-01-02 17:43:10: Epoch 1, training loss 0.005527:  46%|############9               | 185/399 [01:43<02:00,  1.77it/s]
+(INFO) 2020-01-02 17:43:15: Epoch 1, training loss 0.003307:  49%|#############6              | 195/399 [01:48<01:57,  1.74it/s]
+(INFO) 2020-01-02 17:43:21: Epoch 1, training loss 0.003536:  51%|##############3             | 204/399 [01:53<01:52,  1.74it/s]
+(INFO) 2020-01-02 17:43:26: Epoch 1, training loss 0.003513:  53%|##############9             | 213/399 [01:58<01:44,  1.79it/s]
+(INFO) 2020-01-02 17:43:31: Epoch 1, training loss 0.003384:  56%|###############5            | 222/399 [02:03<01:36,  1.84it/s]
+(INFO) 2020-01-02 17:43:36: Epoch 1, training loss 0.004064:  58%|################2           | 231/399 [02:09<01:35,  1.75it/s]
+(INFO) 2020-01-02 17:43:41: Epoch 1, training loss 0.002431:  60%|################9           | 241/399 [02:14<01:23,  1.89it/s]
+(INFO) 2020-01-02 17:43:47: Epoch 1, training loss 0.002853:  63%|#################6          | 251/399 [02:19<01:20,  1.83it/s]
+(INFO) 2020-01-02 17:43:52: Epoch 1, training loss 0.002893:  65%|##################3         | 261/399 [02:25<01:14,  1.86it/s]
+(INFO) 2020-01-02 17:43:57: Epoch 1, training loss 0.002350:  68%|##################9         | 270/399 [02:30<01:12,  1.78it/s]
+(INFO) 2020-01-02 17:44:02: Epoch 1, training loss 0.002394:  70%|###################6        | 280/399 [02:35<01:03,  1.88it/s]
+(INFO) 2020-01-02 17:44:07: Epoch 1, training loss 0.002284:  72%|####################2       | 289/399 [02:40<01:02,  1.76it/s]
+(INFO) 2020-01-02 17:44:13: Epoch 1, training loss 0.002375:  75%|####################9       | 299/399 [02:46<00:56,  1.78it/s]
+(INFO) 2020-01-02 17:44:18: Epoch 1, training loss 0.001935:  77%|#####################6      | 309/399 [02:51<00:48,  1.86it/s]
+(INFO) 2020-01-02 17:44:24: Epoch 1, training loss 0.002664:  80%|######################3     | 319/399 [02:57<00:44,  1.81it/s]
+(INFO) 2020-01-02 17:44:29: Epoch 1, training loss 0.002295:  82%|#######################     | 329/399 [03:02<00:38,  1.80it/s]
+(INFO) 2020-01-02 17:44:34: Epoch 1, training loss 0.002447:  85%|#######################7    | 338/399 [03:07<00:34,  1.77it/s]
+(INFO) 2020-01-02 17:44:40: Epoch 1, training loss 0.002073:  87%|########################4   | 348/399 [03:12<00:26,  1.90it/s]
+(INFO) 2020-01-02 17:44:45: Epoch 1, training loss 0.001656:  90%|#########################1  | 358/399 [03:18<00:22,  1.82it/s]
+(INFO) 2020-01-02 17:44:50: Epoch 1, training loss 0.001908:  92%|#########################7  | 367/399 [03:23<00:18,  1.74it/s]
+(INFO) 2020-01-02 17:44:56: Epoch 1, training loss 0.001661:  94%|##########################4 | 377/399 [03:28<00:12,  1.79it/s]
+(INFO) 2020-01-02 17:45:01: Epoch 1, training loss 0.001348:  97%|###########################1| 387/399 [03:34<00:06,  1.89it/s]
+(INFO) 2020-01-02 17:45:06: Epoch 1, training loss 0.002253:  99%|###########################7| 396/399 [03:39<00:01,  1.81it/s]
+(INFO) 2020-01-02 17:45:07: Save checkpoint to experiments/clothes3/158_clothes3/checkpoints/last_checkpoint.params
+(INFO) 2020-01-02 17:45:11: Epoch 1, validation loss: 0.778429:   2%|5                          | 8/399 [00:03<02:46,  2.34it/s]
+(INFO) 2020-01-02 17:45:16: Epoch 1, validation loss: 0.750322:   6%|#4                        | 22/399 [00:08<02:07,  2.95it/s]

@@ -2,11 +2,11 @@ import torch.nn as nn
 
 from adaptis.model import ops
 from adaptis.model.toy.unet import UNet
-from adaptis.model.adaptis import AdaptIS
+from adaptis.model.adaptis import AdaptIS,AdaptISWithLoss
 from adaptis.model import basic_blocks
 
 
-def get_unet_model(channel_width=32, max_width=512, with_proposals=False, rescale_output=(0.2, -1.7), norm_layer=nn.BatchNorm2d):
+def get_unet_model(loss_cfg,val_loss_cfg,channel_width=32, max_width=512, with_proposals=False, rescale_output=(0.2, -1.7), norm_layer=nn.BatchNorm2d):
     unet = UNet(
         num_blocks=4,
         first_channels=channel_width,
@@ -15,7 +15,7 @@ def get_unet_model(channel_width=32, max_width=512, with_proposals=False, rescal
     )
     in_channels = unet.get_feature_channels()
 
-    return AdaptIS(
+    return AdaptISWithLoss(
         backbone=unet,
         adaptis_head=ToyAdaptISHead(
             basic_blocks.SimpleConvController(3, in_channels, channel_width, norm_layer=norm_layer),
@@ -26,6 +26,8 @@ def get_unet_model(channel_width=32, max_width=512, with_proposals=False, rescal
             rescale_output=rescale_output,
             norm_layer=norm_layer
         ),
+        loss_cfg = loss_cfg,
+        val_loss_cfg = val_loss_cfg,
         segmentation_head=basic_blocks.ConvHead(2, in_channels=in_channels, num_layers=3, norm_layer=norm_layer),
         proposal_head=basic_blocks.ConvHead(1, in_channels=in_channels, num_layers=2, norm_layer=norm_layer),
         with_proposals=with_proposals

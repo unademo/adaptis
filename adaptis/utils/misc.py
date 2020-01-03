@@ -4,6 +4,7 @@ import numpy as np
 from adaptis.utils.log import logger
 
 
+
 def save_checkpoint(net, checkpoints_path, epoch=None, prefix='', verbose=True):
     if epoch is None:
         checkpoint_name = 'last_checkpoint.params'
