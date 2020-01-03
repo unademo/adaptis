@@ -1,4 +1,4 @@
-## AdaptIS: Adaptive Instance Selection Network
+## AdaptIS: Adaptive Instance Selection Network (pytorch With DataParallel Support)
 This codebase implements the system described in the paper ["AdaptIS: Adaptive Instance Selection Network"](https://arxiv.org/abs/1909.07829), Konstantin Sofiiuk, Olga Barinova, Anton Konushin. Accepted at ICCV 2019.
 The code performs **panoptic segmentation** and can be also used for **instance segmentation**.
 
