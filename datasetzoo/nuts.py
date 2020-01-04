@@ -6,22 +6,15 @@ import glob
 from adaptis.data.base import BaseDataset
 
 
-class ClothesSegDataset(BaseDataset):
+class NutsDataset(BaseDataset):
     def __init__(self, dataset_rootpath, split='train', **kwargs):
-        super(ClothesSegDataset, self).__init__(**kwargs)
+        super(NutsDataset, self).__init__(**kwargs)
 
         self.dataset_rootpath = Path(dataset_rootpath)
         self.dataset_split = split
         
-        #Toy Dataset
-        # self.dataset_samples = []
-        # images_path = sorted((self.dataset_path / split).rglob('*rgb.png'))
-        # for image_path in images_path:
-        #     image_path = str(image_path)
-        #     mask_path = image_path.replace('rgb.png', 'im.png')
-        #     self.dataset_samples.append((image_path, mask_path))
         
-        # Clothes Dataset
+        # Nuts Dataset # Need to implement here
         self.dataset_samples = []
         images_path = glob.glob(os.path.join(self.dataset_rootpath,"Images","*.jpg"))
         for image_path in images_path:
