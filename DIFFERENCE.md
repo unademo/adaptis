@@ -4,3 +4,4 @@
 ### Delete loss logging
 
 #### Note: this repo also could only run under pytorch 1.3 and upper
+#### Note: Need to rewrite yourself Dataset class
